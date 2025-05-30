@@ -830,6 +830,14 @@ io_write_ensure(VALUE _argument)
 static int
 io_write(struct IO_Event_Selector_URing *selector, VALUE fiber, int descriptor, char *buffer, size_t length, off_t offset)
 {
+	// Fast path:
+	int result = write(descriptor, buffer, length);
+	if (result > 0) {
+		return result;
+	} else if (result == -1 && !IO_Event_try_again(errno)) {
+		return -errno;
+	}
+	
 	struct IO_Event_Selector_URing_Waiting waiting = {
 		.fiber = fiber,
 	};
