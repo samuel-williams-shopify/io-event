@@ -800,7 +800,7 @@ io_write_submit(VALUE _argument)
 	struct io_uring_sqe *sqe = io_get_sqe(selector);
 	io_uring_prep_write(sqe, arguments->descriptor, arguments->buffer, arguments->length, arguments->offset);
 	io_uring_sqe_set_data(sqe, arguments->waiting->completion);
-	io_uring_submit_pending(selector);
+	io_uring_submit_now(selector);
 	
 	IO_Event_Selector_loop_yield(&selector->backend);
 	
